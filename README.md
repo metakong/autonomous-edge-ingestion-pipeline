@@ -39,6 +39,11 @@ This project serves as the edge data ingestion hub, running locally to leverage 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
 
 ## Workers
-
-All workers are located in `src/workers/` and inherit from `src/base_worker.py`.
-They are orchestrated by `src/orchestrator.py` based on missions in Firestore.
+ 
+ All workers are located in `src/workers/` and inherit from `src/base_worker.py`.
+ They are orchestrated by `src/orchestrator.py` based on missions in Firestore.
+ 
+ > [!NOTE]
+ > **MVP Status**: 
+ > - **Governance**: The DSIE protocol is currently simplified. Diagnosis reports default to 100% confidence.
+ > - **Throughput**: The Orchestrator processes missions sequentially (limit 1) for safety. Batch processing is planned for v2.
