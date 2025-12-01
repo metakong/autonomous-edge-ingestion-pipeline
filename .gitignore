@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+.next/
+out/
+build/
+
+# Secrets
+credentials.json
+credentials.json.bak
+service_account.json
+credentials/
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+
+# Data & Artifacts (Allow specific patterns, block general noise)
+artifacts/*.csv
+debug/*.json
+*_debug.json
+*_raw.json
+fanduel*.json
+prizepicks*.json
+*.png
+fastf1_cache/
+
+# Block generic data dumps but allow config
+# *.csv # Commented out blanket block
+# *.json # Commented out blanket block
+!package-lock.json
+!firestore.indexes.json
+!firebase.json
+!package.json
+!tsconfig.json
+!dashboard/package.json
+!dashboard/tsconfig.json
+*_debug.json
+*_raw.json
+fanduel*.json
+prizepicks*.json
+*.png
+fastf1_cache/
+
+# OS
+.DS_Store

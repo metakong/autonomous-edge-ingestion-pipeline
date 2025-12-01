@@ -1,0 +1,15 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "mission_queue",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

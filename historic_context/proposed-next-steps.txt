@@ -1,0 +1,95 @@
+Role Confirmed: **VP of Engineering**
+
+**Status:** **ARCHITECTURAL SYNTHESIS & EXECUTION PLAN.**
+
+I have reviewed the entire history of **"veiled-vector-core"** and cross-referenced it with your **Constitution**, the **Critical Audits** (Perplexity/ChatGPT), and the **Solopreneur Blueprint**.
+
+Here is the **State of the Union** for your infrastructure, followed by the **Strategic Plan** to populate it with Autonomous Employees.
+
+-----
+
+### **I. THE "VEILED-VECTOR-CORE" INFRASTRUCTURE (Current State)**
+
+We have successfully built a **Hybrid Cloud-Sovereign Architecture**:
+
+1.  **The "Brain" (Google Cloud Platform):**
+
+      * **Cloud Run (`veiled-vector-orchestrator`):** Hosting the FastAPI logic.
+      * **Firestore (`veiled-vector-core-firestore`):** Acting as the "Task Queue" and "Memory".
+      * **Cloud Storage (`veiled-vector-data-...`):** Acting as the "File Cabinet" for raw loot (JSON/HTML).
+      * **Secret Manager:** Securing your API keys.
+
+2.  **The "Hands" (The Dell / Kaji):**
+
+      * **Runtime:** Python Virtual Environment (`venv`).
+      * **Capability:** Stealth Scraping (Playwright), API Sniffing (Requests), and "Heavy Lifting" to GCS.
+      * **Status:** Successfully successfully cracked the **DraftKings Nash API** and proved the "First Dollar" concept.
+
+3.  **The "Constitution" (Governance):**
+
+      * Defined in markdown (DSIE-01 to DSIE-04) but **not yet hard-coded** into the software.
+
+-----
+
+### **II. THE STRATEGIC PLAN: "OPERATION SELF-REPLICATION"**
+
+To shift from "Running Scripts" to "Managing Employees," we must install an **Agentic Operating System** inside "veiled-vector-core."
+
+**Goal:** Ensure the project contains autonomous agents that improve *themselves*.
+
+#### **PHASE 1: THE "HR DEPARTMENT" (Governance Injection)**
+
+*Problem:* Agents currently guess. They need laws.
+
+  * **Action:** Create a Python library `src/governance.py` in the Cloud Brain.
+  * **Function:** It injects the **DSIE Protocols** (Diagnose, Strategize, Implement, Execute) into the `system_prompt` of every agent we spawn.
+  * **Mechanism:**
+    ```python
+    def get_system_prompt(role):
+        return f"{BASE_CONSTITUTION} \n You are {role}. \n {DSIE_CHECKLIST}"
+    ```
+    *This solves the "Undisciplined Execution" critique from ChatGPT.*
+
+#### **PHASE 2: THE "STAFFING" (Agent Deployment)**
+
+We will deploy three distinct "Employee" classes to handle the foundational workflows.
+
+**Employee A: The "Acquisitions Officer" (Resident on Dell)**
+
+  * **Role:** Data Harvesting.
+  * **Tool:** **Roo Code** (Lead Engineer) configured with the `SOP_DATA_ACQUISITION.md`.
+  * **Autonomy:** It reads the "Data Source Repository," writes its own `worker_*.py` scripts (like it did for DraftKings), tests them, and schedules them via Cron.
+  * **Objective:** "Ensure we have fresh odds from 5 sources every 15 minutes.".
+
+**Employee B: The "Actuary" (Resident on Cloud Run)**
+
+  * **Role:** Normalization & Probability.
+  * **Tool:** A `CrewAI` Agent running on Groq LPU (for speed).
+  * **Autonomy:** It watches the GCS Bucket. When a new JSON lands, it wakes up, maps the IDs to the "Universal Schema" (e.g., `bufpc` -\> `NFL_BUF_PIT`), and saves the clean record to Postgres/BigQuery.
+  * **Objective:** "Maintain the Golden Record."
+
+**Employee C: The "Internal Auditor" (Resident on Cloud Functions)**
+
+  * **Role:** Quality Assurance & Kill Switch.
+  * **Tool:** A lightweight script running `preflight_check.sh` logic.
+  * **Autonomy:** It runs every hour. It checks: "Did we spend \>$5? Did the scrapers fail \>5%? Is the disk full?"
+  * **Authority:** It has the power to **STOP** the other agents and alert the CEO (You) via dashboard/email.
+
+#### **PHASE 3: THE "ONBOARDING" (Knowledge Base RAG)**
+
+*Problem:* Agents have amnesia.
+
+  * **Action:** We upload your entire "Knowledge Base" (The text files you sent me) into a **Vector Store** (using ChromaDB or Firestore Vector Search).
+  * **Workflow:** Before an agent writes code, it queries the Knowledge Base: *"How do we handle Cloudflare?"* -\> *Retrieves "SOP-DA-001: Use API Sniffing first."*
+
+-----
+
+### **IMMEDIATE EXECUTION STEPS**
+
+We will start by installing the **Lead Engineer (Roo Code)** on the Dell, as this is the lever that builds the rest of the machine.
+
+1.  **On the Dell:** Install **Roo Code** (VS Code Extension).
+2.  **Configuration:** Connect it to **Groq** (Free Tier) for high-speed coding.
+3.  **First Assignment:** Give Roo Code the `SOP_DATA_ACQUISITION.md` and the `DraftKings` success log. Tell it: *"You are the Lead Engineer. Generalize this success. Write a factory class that generates similar workers for Bovada and CollegeFootballData."*
+
+**Shall I generate the `SOP_DATA_ACQUISITION.md` file content so you can feed it to your new Lead Engineer?**

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "veiled-vector-core"
+version = "0.1.0"
+description = "Core logic for Veiled Vector sports analytics"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "google-cloud-firestore",
+    "google-cloud-storage",
+    "requests",
+    "pydantic",
+    "python-dotenv"
+]
+
+[tool.setuptools]
+packages = ["src"]

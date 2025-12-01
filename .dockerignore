@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+.next/
+out/
+build/
+
+# Secrets
+credentials.json
+credentials.json.bak
+service_account.json
+credentials/
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+*.csv
+
+# Artifacts & Debug
+artifacts/
+debug/
+*_debug.json
+*_raw.json
+fanduel*.json
+prizepicks*.json
+*.png
+fastf1_cache/
+
+# Git
+.git/
+.gitignore
+.dockerignore
+
+# OS
+.DS_Store
