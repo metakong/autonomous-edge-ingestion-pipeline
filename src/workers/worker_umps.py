@@ -1,46 +1,39 @@
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 import time
-import os
-import logging
-import sys
 
-# IMPORT GOVERNANCE LAYERS
 from src.base_worker import BaseWorker
+
 
 class UmpsWorker(BaseWorker):
     """
-    Worker for scraping Umpire Scorecards.
+    Worker for scraping Umpire Scorecards game pages.
     """
     TARGET_URL = "https://umpscorecards.com/games/"
 
     def validate_html(self, content: bytes, name: str) -> bool:
-        """Edge Data Integrity Check for HTML Content."""
+        """Edge Data Integrity Check for raw HTML content."""
         if not content:
             self.logger.error(f"Validation Failed: {name} is empty")
             return False
-        if len(content) < 500: # Arbitrary small size check
-            self.logger.warning(f"Validation Warning: {name} is suspiciously small ({len(content)} bytes)")
+        if len(content) < 500:
+            self.logger.warning(
+                f"Validation Warning: {name} is suspiciously small ({len(content)} bytes)"
+            )
             return False
         return True
 
     def run(self) -> bool:
         self.logger.info("Checking the zone (Umpire Scorecards)...")
-        
+
         try:
             self.logger.info(f"Scraping {self.TARGET_URL}...")
             resp = self.session.get(self.TARGET_URL, timeout=self.config.DEFAULT_TIMEOUT)
-            
+
             if resp.status_code == 200:
                 if self.validate_html(resp.content, "Scorecards Page"):
-                    # Let's save the HTML regardless
                     filename = f"umpscorecards_games_{int(time.time())}.html"
                     blob = self.bucket.blob(f"results/mlb/{filename}")
-                    blob.upload_from_string(resp.content, content_type='text/html')
-                    self.logger.info(f"   -> Scorecards Secured (HTML).")
-                    
-                    # GENERATE EXECUTION REPORT
+                    blob.upload_from_string(resp.content, content_type="text/html")
+                    self.logger.info("   -> Scorecards Secured (HTML).")
                     return True
                 else:
                     self.logger.warning("   -> HTML validation failed.")
@@ -51,5 +44,4 @@ class UmpsWorker(BaseWorker):
 
         except Exception as e:
             self.logger.error(f"Heist Failed: {e}")
-            # Generate Failure Report
             return False
