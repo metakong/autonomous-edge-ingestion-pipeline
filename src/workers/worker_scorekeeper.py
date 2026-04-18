@@ -6,7 +6,6 @@ import os
 import sys
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class ScorekeeperWorker(BaseWorker):
@@ -98,18 +97,6 @@ class ScorekeeperWorker(BaseWorker):
                 self.sio.disconnect()
                 
                 # GENERATE EXECUTION REPORT
-                report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem=self.__class__.__name__,
-                    change_summary="Scorekeeper Socket Capture",
-                    primary_metric="events_captured",
-                    metric_before=0.0,
-                    metric_after=float(len(self.captured_events)),
-                    observation_window_hours=0.01,
-                    success=True,
-                    notes=f"Secured: {len(self.captured_events)} events"
-                )
-                self.file_report(report)
                 return True
             else:
                 self.logger.warning("   -> Scorekeeper data validation failed.")
@@ -119,37 +106,4 @@ class ScorekeeperWorker(BaseWorker):
         except Exception as e:
             self.logger.error(f"Keeper Failed: {e}")
             # Generate Failure Report
-            fail_report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="Scorekeeper Capture (FAILED)",
-                primary_metric="events_captured",
-                metric_before=0.0,
-                metric_after=0.0,
-                observation_window_hours=0.01,
-                success=False,
-                notes=str(e)
-            )
-            self.file_report(fail_report)
             return False
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    
-    # DEFINE THE AGENT
-    contract = AgentContract(
-        agent_id="acquisitions_officer_keeper",
-        human_readable_name="Acquisitions Officer (Scorekeeper)",
-        autonomy_level=2
-    )
-
-    # TEST: RUN WITH DIAGNOSIS
-    print("\n--- ATTEMPT: Running with valid paperwork ---")
-    report = DiagnosisReport(
-        problem_summary="Need real-time scores and odds",
-        root_cause_hypothesis="Routine ingestion schedule",
-        confidence=1.0
-    )
-    good_ctx = AgentContext(contract=contract, current_diagnosis=report)
-    worker = ScorekeeperWorker(good_ctx)
-    worker.execute(ctx=good_ctx)

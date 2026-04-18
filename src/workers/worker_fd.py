@@ -8,7 +8,6 @@ from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 class FanDuelWorker(BaseWorker):
     """
@@ -123,18 +122,6 @@ class FanDuelWorker(BaseWorker):
                     self.upload_json(data, filename)
                     
                     # GENERATE EXECUTION REPORT
-                    report = ExecutionReport(
-                        stage=DSIEStage.EXECUTE,
-                        subsystem="worker_fd",
-                        change_summary="FanDuel NFL Odds Scrape",
-                        primary_metric="bytes_secured",
-                        metric_before=0.0,
-                        metric_after=float(len(str(data))),
-                        observation_window_hours=0.01,
-                        success=True,
-                        notes=f"Secured: {len(str(data))} chars of JSON"
-                    )
-                    self.file_report(report)
                     
                     await browser.close()
                     return True
@@ -147,18 +134,6 @@ class FanDuelWorker(BaseWorker):
                     self.upload_json({"raw_html": content}, filename)
                     
                     # Report Partial Success (Raw HTML)
-                    report = ExecutionReport(
-                        stage=DSIEStage.EXECUTE,
-                        subsystem="worker_fd",
-                        change_summary="FanDuel Raw HTML Scrape",
-                        primary_metric="bytes_secured",
-                        metric_before=0.0,
-                        metric_after=float(len(content)),
-                        observation_window_hours=0.01,
-                        success=True,
-                        notes=f"Secured: {len(content)} bytes (Raw HTML)"
-                    )
-                    self.file_report(report)
 
                     await browser.close()
                     return True
@@ -166,18 +141,6 @@ class FanDuelWorker(BaseWorker):
             except Exception as e:
                 self.logger.error(f"Heist Failed: {e}")
                 # Generate Failure Report
-                fail_report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem="worker_fd",
-                    change_summary="FanDuel Scrape (FAILED)",
-                    primary_metric="bytes_secured",
-                    metric_before=0.0,
-                    metric_after=0.0,
-                    observation_window_hours=0.01,
-                    success=False,
-                    notes=str(e)
-                )
-                self.file_report(fail_report)
                 
                 await browser.close()
                 return False

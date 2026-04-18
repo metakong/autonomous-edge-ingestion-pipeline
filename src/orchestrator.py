@@ -12,8 +12,6 @@ from google.cloud import storage
 # sys.path.append(os.getcwd())
 # sys.path.append(os.path.join(os.getcwd(), "src"))
 
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
-
 # LOGGING
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - [ORCHESTRATOR] - %(levelname)s - %(message)s')
 logger = logging.getLogger("Orchestrator")
@@ -75,30 +73,6 @@ class Orchestrator:
             logger.error(f"Failed to import worker module {module_name}: {e}")
             return None
 
-    def create_governance_context(self, agent_id: str, human_name: str, mission_data: Dict[str, Any], mission_id: str) -> AgentContext:
-        """Create the AgentContext required by the @require_diagnosis decorator."""
-        
-        # 1. Create Contract
-        contract = AgentContract(
-            agent_id=agent_id,
-            human_readable_name=human_name,
-            autonomy_level=2 # Standard for automated workers
-        )
-
-        # 2. Create Diagnosis Report
-        # Ideally, the mission_data contains specific diagnosis info.
-        # If not, we generate a standard one for "Routine Ingestion".
-        problem = mission_data.get("problem_summary", "Routine Data Acquisition")
-        hypothesis = mission_data.get("root_cause_hypothesis", "Scheduled Ingestion")
-        
-        diagnosis = DiagnosisReport(
-            problem_summary=problem,
-            root_cause_hypothesis=hypothesis,
-            confidence=1.0
-        )
-
-        return AgentContext(contract=contract, current_diagnosis=diagnosis, mission_id=mission_id)
-
     def execute_mission(self, doc):
         """Execute a single mission."""
         mission_data = doc.to_dict()
@@ -133,25 +107,20 @@ class Orchestrator:
             })
             return
 
-        # 4. Create Governance Context
-        ctx = self.create_governance_context(agent_id, human_name, mission_data, mission_id)
-
-        # 5. Execute Heist
+        # 4. Execute Heist
         try:
             # Instantiate Class and Run
             WorkerClass = getattr(worker_module, class_name)
-            worker_instance = WorkerClass(ctx)
-            success, report_path = worker_instance.execute(ctx=ctx)
+            worker_instance = WorkerClass()
+            success = worker_instance.execute()
 
-            # 6. Update Mission Status
+            # 5. Update Mission Status
             status = "COMPLETED" if success else "FAILED"
             update_data = {
                 "status": status,
                 "worker_module": module_name,
                 "completed_at": firestore.SERVER_TIMESTAMP
             }
-            if report_path:
-                update_data["execution_report"] = report_path
                 
             doc.reference.update(update_data)
             logger.info(f"Mission {mission_id} {status}.")

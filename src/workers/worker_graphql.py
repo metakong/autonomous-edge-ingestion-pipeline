@@ -7,7 +7,6 @@ import sys
 from fake_useragent import UserAgent
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class GraphQLWorker(BaseWorker):
@@ -92,18 +91,6 @@ class GraphQLWorker(BaseWorker):
                 self.logger.info(f"Decoder Ring Uploaded: gs://{self.config.BUCKET_NAME}/raw_data/{filename}")
                 
                 # GENERATE EXECUTION REPORT
-                report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem=self.__class__.__name__,
-                    change_summary="GraphQL Event Data Query",
-                    primary_metric="bytes_secured",
-                    metric_before=0.0,
-                    metric_after=float(len(str(data))),
-                    observation_window_hours=0.01,
-                    success=True,
-                    notes=f"Secured: {len(str(data))} bytes of JSON"
-                )
-                self.file_report(report)
                 return True
             else:
                 self.logger.warning("   -> GraphQL validation failed.")
@@ -112,37 +99,4 @@ class GraphQLWorker(BaseWorker):
         except Exception as e:
             self.logger.error(f"Heist Failed: {e}")
             # Generate Failure Report
-            fail_report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="GraphQL Query (FAILED)",
-                primary_metric="bytes_secured",
-                metric_before=0.0,
-                metric_after=0.0,
-                observation_window_hours=0.01,
-                success=False,
-                notes=str(e)
-            )
-            self.file_report(fail_report)
             return False
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    
-    # DEFINE THE AGENT
-    contract = AgentContract(
-        agent_id="acquisitions_officer_graphql",
-        human_readable_name="Acquisitions Officer (GraphQL)",
-        autonomy_level=2
-    )
-
-    # TEST: RUN WITH DIAGNOSIS
-    print("\n--- ATTEMPT: Running with valid paperwork ---")
-    report = DiagnosisReport(
-        problem_summary="Need specific event metadata",
-        root_cause_hypothesis="Routine ingestion schedule",
-        confidence=1.0
-    )
-    good_ctx = AgentContext(contract=contract, current_diagnosis=report)
-    worker = GraphQLWorker(good_ctx)
-    worker.execute(ctx=good_ctx)

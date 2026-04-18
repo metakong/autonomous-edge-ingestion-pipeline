@@ -6,7 +6,6 @@ import os
 import sys
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class PlatformWorker(BaseWorker):
@@ -89,18 +88,6 @@ class PlatformWorker(BaseWorker):
                 self.sio.disconnect()
                 
                 # GENERATE EXECUTION REPORT
-                report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem=self.__class__.__name__,
-                    change_summary="SportTrade Platform Socket Capture",
-                    primary_metric="events_captured",
-                    metric_before=0.0,
-                    metric_after=float(len(self.captured_events)),
-                    observation_window_hours=0.01,
-                    success=True,
-                    notes=f"Secured: {len(self.captured_events)} events"
-                )
-                self.file_report(report)
                 return True
             else:
                 self.logger.warning("   -> Platform data validation failed.")
@@ -110,37 +97,4 @@ class PlatformWorker(BaseWorker):
         except Exception as e:
             self.logger.error(f"Platform Failed: {e}")
             # Generate Failure Report
-            fail_report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="Platform Capture (FAILED)",
-                primary_metric="events_captured",
-                metric_before=0.0,
-                metric_after=0.0,
-                observation_window_hours=0.01,
-                success=False,
-                notes=str(e)
-            )
-            self.file_report(fail_report)
             return False
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    
-    # DEFINE THE AGENT
-    contract = AgentContract(
-        agent_id="acquisitions_officer_platform",
-        human_readable_name="Acquisitions Officer (SportTrade Platform)",
-        autonomy_level=2
-    )
-
-    # TEST: RUN WITH DIAGNOSIS
-    print("\n--- ATTEMPT: Running with valid paperwork ---")
-    report = DiagnosisReport(
-        problem_summary="Need real-time market liquidity data",
-        root_cause_hypothesis="Routine ingestion schedule",
-        confidence=1.0
-    )
-    good_ctx = AgentContext(contract=contract, current_diagnosis=report)
-    worker = PlatformWorker(good_ctx)
-    worker.execute(ctx=good_ctx)

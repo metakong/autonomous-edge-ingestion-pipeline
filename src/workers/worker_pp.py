@@ -7,7 +7,6 @@ from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class PrizePicksWorker(BaseWorker):
@@ -114,18 +113,6 @@ class PrizePicksWorker(BaseWorker):
                     self.upload_json(data, filename)
                     
                     # GENERATE EXECUTION REPORT
-                    report = ExecutionReport(
-                        stage=DSIEStage.EXECUTE,
-                        subsystem="worker_pp",
-                        change_summary="PrizePicks Odds Scrape",
-                        primary_metric="bytes_secured",
-                        metric_before=0.0,
-                        metric_after=float(len(str(data))),
-                        observation_window_hours=0.01,
-                        success=True,
-                        notes=f"Secured: {len(str(data))} chars of JSON"
-                    )
-                    self.file_report(report)
                     return True 
                 else:
                     # Fallback to raw HTML
@@ -137,35 +124,11 @@ class PrizePicksWorker(BaseWorker):
                     self.upload_json({"raw_html": content}, filename)
                     
                     # Report Partial Success (Raw HTML)
-                    report = ExecutionReport(
-                        stage=DSIEStage.EXECUTE,
-                        subsystem="worker_pp",
-                        change_summary="PrizePicks Raw HTML Scrape",
-                        primary_metric="bytes_secured",
-                        metric_before=0.0,
-                        metric_after=float(len(content)),
-                        observation_window_hours=0.01,
-                        success=True,
-                        notes=f"Secured: {len(content)} bytes (Raw HTML)"
-                    )
-                    self.file_report(report)
                     return True
 
             except Exception as e:
                 self.logger.error(f"Mission Failed: {e}")
                 # Generate Failure Report
-                fail_report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem="worker_pp",
-                    change_summary="PrizePicks Scrape (FAILED)",
-                    primary_metric="bytes_secured",
-                    metric_before=0.0,
-                    metric_after=0.0,
-                    observation_window_hours=0.01,
-                    success=False,
-                    notes=str(e)
-                )
-                self.file_report(fail_report)
                 return False
             finally:
                 await browser.close()

@@ -8,7 +8,6 @@ from typing import Optional, Dict, Any
 # from fake_useragent import UserAgent # Unused
 from google.cloud import storage, firestore
 
-from src.governance import require_diagnosis, AgentContext, ExecutionReport, DSIEStage
 from src.config import Config
 
 from requests.adapters import HTTPAdapter
@@ -17,14 +16,12 @@ from urllib3.util.retry import Retry
 class BaseWorker(ABC):
     """
     Abstract Base Class for all Veiled Vector workers.
-    Enforces Governance, Standardized Logging, and Config usage.
+    Enforces Standardized Logging and Config usage.
     """
     
-    def __init__(self, context: AgentContext, offline_mode: bool = False):
-        self.context = context
+    def __init__(self, offline_mode: bool = False):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.config = Config
-        self.last_report_path = None
         self.offline_mode = offline_mode
         
         if self.offline_mode:
@@ -77,25 +74,22 @@ class BaseWorker(ABC):
         """
         pass
 
-    @require_diagnosis
-    def execute(self, ctx: AgentContext):
+    def execute(self) -> bool:
         """
-        Wrapper for run() that enforces DSIE Governance.
-        Returns: (success: bool, report_path: Optional[str])
+        Wrapper for run().
+        Returns: success: bool
         """
-        # Ensure self.context matches the passed ctx if needed, or just use ctx.
-        # The decorator has already validated ctx.
-        self.logger.info(f"Starting execution for agent: {ctx.contract.human_readable_name}")
+        self.logger.info(f"Starting execution.")
         try:
             success = self.run()
             if success:
                 self.logger.info("Mission Accomplished.")
             else:
                 self.logger.warning("Mission Failed or Incomplete.")
-            return success, self.last_report_path
+            return success
         except Exception as e:
             self.logger.error(f"Critical Worker Failure: {e}")
-            return False, self.last_report_path
+            return False
 
     def upload_json(self, data: Any, path: str):
         """
@@ -108,40 +102,3 @@ class BaseWorker(ABC):
         blob = self.bucket.blob(path)
         blob.upload_from_string(json.dumps(data, indent=2), content_type='application/json')
         self.logger.info(f"Uploaded: gs://{self.config.BUCKET_NAME}/{path}")
-
-    def file_report(self, report: ExecutionReport):
-        """
-        Files an ExecutionReport to GCS and Firestore.
-        """
-        timestamp = int(time.time())
-        
-        # Ensure mission_id is set from context if missing in report
-        if not report.mission_id and self.context.mission_id:
-            report.mission_id = self.context.mission_id
-
-        # 1. Upload to GCS
-        filename = f"report_{report.subsystem}_{timestamp}.json"
-        path = f"governance/executions/{filename}"
-        
-        if self.bucket:
-            try:
-                blob = self.bucket.blob(path)
-                blob.upload_from_string(report.model_dump_json(indent=2), content_type='application/json')
-                self.last_report_path = f"gs://{self.config.BUCKET_NAME}/{path}"
-                self.logger.info(f"Uploaded report to GCS: {self.last_report_path}")
-            except Exception as e:
-                self.logger.error(f"Failed to upload report to GCS: {e}")
-        else:
-            self.logger.info(f"[OFFLINE] Would upload report to {path}")
-
-        # 2. Log to Firestore
-        if self.db:
-            try:
-                report_data = report.model_dump()
-                report_data['timestamp'] = firestore.SERVER_TIMESTAMP
-                self.db.collection("execution_reports").add(report_data)
-                self.logger.info(f"Report Filed to Firestore.")
-            except Exception as e:
-                self.logger.error(f"Failed to log report to Firestore: {e}")
-        else:
-            self.logger.info(f"[OFFLINE] Would log report to Firestore")

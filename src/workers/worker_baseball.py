@@ -8,7 +8,6 @@ import sys
 from datetime import datetime, timedelta
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class BaseballWorker(BaseWorker):
@@ -75,55 +74,9 @@ class BaseballWorker(BaseWorker):
 
             # GENERATE EXECUTION REPORT
             success = len(items_secured) > 0
-            report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="Triple Play Scrape",
-                primary_metric="sources_secured",
-                metric_before=0.0,
-                metric_after=float(len(items_secured)),
-                observation_window_hours=0.01,
-                success=success,
-                notes=f"Secured: {', '.join(items_secured)}"
-            )
-            self.file_report(report)
             return success
 
         except Exception as e:
             self.logger.error(f"Heist Failed: {e}")
             # Generate Failure Report
-            fail_report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="Triple Play Scrape (FAILED)",
-                primary_metric="sources_secured",
-                metric_before=0.0,
-                metric_after=0.0,
-                observation_window_hours=0.01,
-                success=False,
-                notes=str(e)
-            )
-            self.file_report(fail_report)
             return False
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger("KajiBaseball")
-
-    # DEFINE THE AGENT
-    contract = AgentContract(
-        agent_id="acquisitions_officer_baseball",
-        human_readable_name="Acquisitions Officer (Baseball)",
-        autonomy_level=2
-    )
-
-    # TEST: RUN WITH DIAGNOSIS
-    print("\n--- ATTEMPT: Running with valid paperwork ---")
-    report = DiagnosisReport(
-        problem_summary="Need comprehensive baseball data (Physics, Valuation, History)",
-        root_cause_hypothesis="Routine ingestion schedule",
-        confidence=1.0
-    )
-    good_ctx = AgentContext(contract=contract, current_diagnosis=report)
-    worker = BaseballWorker(good_ctx)
-    worker.execute(ctx=good_ctx)

@@ -4,7 +4,6 @@ import time
 import logging
 
 # IMPORT GOVERNANCE LAYERS
-from src.governance import AgentContext, AgentContract, DiagnosisReport, ExecutionReport, DSIEStage
 from src.base_worker import BaseWorker
 
 class DraftKingsWorker(BaseWorker):
@@ -70,19 +69,6 @@ class DraftKingsWorker(BaseWorker):
                 filename = f"draftkings_nfl_{timestamp}.json"
                 self.upload_json(data, f"results/draftkings/{filename}")
                 
-                # File Report
-                report = ExecutionReport(
-                    stage=DSIEStage.EXECUTE,
-                    subsystem=self.__class__.__name__,
-                    change_summary="Routine scrape run",
-                    primary_metric="events_found",
-                    metric_before=0.0,
-                    metric_after=float(len(events)),
-                    observation_window_hours=0.01,
-                    success=True,
-                    notes=f"Uploaded to {filename}"
-                )
-                self.file_report(report)
                 return True
             else:
                 self.logger.error(f"Failed: {response.status_code}")
@@ -90,48 +76,4 @@ class DraftKingsWorker(BaseWorker):
                 
         except Exception as e:
             self.logger.error(f"Heist Failed: {e}")
-            # File Failure Report
-            fail_report = ExecutionReport(
-                stage=DSIEStage.EXECUTE,
-                subsystem=self.__class__.__name__,
-                change_summary="Routine scrape run (FAILED)",
-                primary_metric="events_found",
-                metric_before=0.0,
-                metric_after=0.0,
-                observation_window_hours=0.01,
-                success=False,
-                notes=str(e)
-            )
-            self.file_report(fail_report)
             return False
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger("KajiDK")
-
-    # DEFINE THE AGENT
-    contract = AgentContract(
-        agent_id="acquisitions_officer_01",
-        human_readable_name="Acquisitions Officer",
-        autonomy_level=2
-    )
-
-    # TEST 1: RUN WITHOUT DIAGNOSIS (SHOULD FAIL)
-    print("\n--- ATTEMPT 1: Running naked (No Diagnosis) ---")
-    try:
-        bad_ctx = AgentContext(contract=contract, current_diagnosis=None)
-        worker = DraftKingsWorker(bad_ctx)
-        worker.execute(ctx=bad_ctx)
-    except Exception as e:
-        logger.error(f"BLOCKED BY GOVERNANCE: {e}")
-
-    # TEST 2: RUN WITH DIAGNOSIS (SHOULD SUCCEED)
-    print("\n--- ATTEMPT 2: Running with valid paperwork ---")
-    report = DiagnosisReport(
-        problem_summary="Need fresh NFL odds",
-        root_cause_hypothesis="Routine ingestion schedule",
-        confidence=1.0
-    )
-    good_ctx = AgentContext(contract=contract, current_diagnosis=report)
-    worker = DraftKingsWorker(good_ctx)
-    worker.execute(ctx=good_ctx)
