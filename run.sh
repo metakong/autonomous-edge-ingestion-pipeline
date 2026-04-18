@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Navigate to directory
-cd ~/veiled-vector-core
+# Navigate to the directory where the script is located
+cd "$(dirname "$0")"
 
 # Activate Python Environment
 source venv/bin/activate
