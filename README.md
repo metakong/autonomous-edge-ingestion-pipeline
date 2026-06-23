@@ -1,3 +1,15 @@
+> **Transparency Notice:** This documentation was authored by Claude Sonnet 4.6 (Anthropic) under direct human oversight — the same iterative, human-in-the-loop AI partnership methodology used to architect and build every system in this portfolio.
+
+> **Portfolio Context** | **Sean Deardorff** — Strategic Operations & Business Development
+>
+> This repository is an artifact of high-velocity, AI-partnered process engineering. It demonstrates how the author builds resilient, automated business machinery — translating the same decoupled logic, governance, and defensive optimization used to manage open sales territories and corporate operations into working code.
+>
+> **Career Connection:** This multi-source data harvesting pipeline mirrors the same predictive intelligence methodology Sean built at AP Wireless, where custom financial trigger monitoring (bankruptcy indicators, Q4 liquidity alerts, debt covenant strain) fed a research operation that drove a 900% increase in annual acquisitions. Different data domain, identical operational pattern: automate the collection, filter the noise, feed the prediction engine.
+>
+> [View Full Portfolio →](https://github.com/metakong/sean-deardorff)
+
+---
+
 # 🏈 Autonomous Edge-Ingestion Pipeline
 
 ## The Vision: The Data Engine for Vertex AI Sports Analytics 📈
